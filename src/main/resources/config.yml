@@ -1,0 +1,8 @@
+# 서버 첫 입장 시 지급되는 람다(λ)의 양
+starting-balance: 1000
+
+# 화폐 표기 설정
+currency:
+  name: "람다"
+  symbol: "λ"
+  code: "RBL"
