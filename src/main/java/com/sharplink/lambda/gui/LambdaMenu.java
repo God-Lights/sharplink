@@ -13,18 +13,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 
-public final class MasterBookMenu {
+public final class LambdaMenu {
 
-    public static final Component TITLE = Component.text("마스터북", NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD);
+    public static final Component TITLE = Component.text("람다 정보", NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD);
 
     public static final int INFO_SLOT = 2;
     public static final int SHOP_SLOT = 6;
 
-    private MasterBookMenu() {
+    private LambdaMenu() {
     }
 
     public static void open(Player player, EconomyManager economyManager) {
-        MasterBookMenuHolder holder = new MasterBookMenuHolder();
+        LambdaMenuHolder holder = new LambdaMenuHolder();
         Inventory inventory = Bukkit.createInventory(holder, 9, TITLE);
         holder.setInventory(inventory);
 

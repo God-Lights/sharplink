@@ -3,7 +3,7 @@ package com.sharplink.lambda.gui;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 
-public final class MasterBookMenuHolder implements InventoryHolder {
+public final class LambdaMenuHolder implements InventoryHolder {
 
     private Inventory inventory;
 

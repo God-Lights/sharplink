@@ -2,6 +2,7 @@ package com.sharplink.lambda.command;
 
 import com.sharplink.lambda.LambdaPlugin;
 import com.sharplink.lambda.economy.EconomyManager;
+import com.sharplink.lambda.gui.LambdaMenu;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
@@ -28,10 +29,14 @@ public final class LambdaCommand implements CommandExecutor, TabCompleter {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            return sendOwnBalance(sender);
+            return openMenu(sender);
         }
 
         String sub = args[0].toLowerCase();
+
+        if (sub.equals("menu")) {
+            return openMenu(sender);
+        }
 
         if (sub.equals("balance")) {
             if (args.length >= 2) {
@@ -84,24 +89,23 @@ public final class LambdaCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        sender.sendMessage(Component.text("사용법: /lambda [balance|give|set] <플레이어> <금액>", NamedTextColor.RED));
+        sender.sendMessage(Component.text("사용법: /lambda [menu|balance|give|set] <플레이어> <금액>", NamedTextColor.RED));
         return true;
     }
 
-    private boolean sendOwnBalance(CommandSender sender) {
+    private boolean openMenu(CommandSender sender) {
         if (!(sender instanceof Player player)) {
-            sender.sendMessage(Component.text("사용법: /lambda balance <플레이어>", NamedTextColor.RED));
+            sender.sendMessage(Component.text("플레이어만 사용할 수 있는 명령어입니다.", NamedTextColor.RED));
             return true;
         }
-        long balance = economyManager.getBalance(player.getUniqueId());
-        sender.sendMessage(Component.text("현재 잔액: " + economyManager.getCurrencySettings().format(balance), NamedTextColor.AQUA));
+        LambdaMenu.open(player, economyManager);
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("balance", "give", "set").stream()
+            return List.of("menu", "balance", "give", "set").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }

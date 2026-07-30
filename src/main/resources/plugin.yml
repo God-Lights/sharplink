@@ -8,7 +8,7 @@ description: 야생 서버용 람다(λ) 화폐 시스템 플러그인
 commands:
   lambda:
     description: 람다 화폐 관리 명령어
-    usage: /lambda [balance|give|set] <플레이어> <금액>
+    usage: /lambda [menu|balance|give|set] <플레이어> <금액>
 
 permissions:
   lambda.admin:
