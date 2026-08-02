@@ -1,0 +1,16 @@
+name: TerritoryWar
+version: '${project.version}'
+main: com.sharplink.territorywar.TerritoryWarPlugin
+api-version: '1.21'
+author: SharpLink
+description: 야생 서버용 영토전쟁(깃발 정복) 게임 플러그인
+
+commands:
+  team:
+    description: 팀 정보 확인 및 반편입자 합류 명령어
+    usage: /team [info|join] <팀 이름>
+
+permissions:
+  territorywar.admin:
+    description: 영토전쟁 게임을 관리할 수 있는 권한
+    default: op

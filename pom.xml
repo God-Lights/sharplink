@@ -5,12 +5,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.sharplink</groupId>
-    <artifactId>lambda-currency</artifactId>
+    <artifactId>territory-war</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Lambda</name>
-    <description>야생 서버용 람다(λ) 화폐 시스템 플러그인</description>
+    <name>TerritoryWar</name>
+    <description>야생 서버용 영토전쟁(깃발 정복) 게임 플러그인</description>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
