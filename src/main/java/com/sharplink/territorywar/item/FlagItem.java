@@ -28,10 +28,10 @@ public final class FlagItem {
     }
 
     public ItemStack create() {
-        ItemStack item = new ItemStack(Material.WHITE_BANNER);
+        ItemStack item = new ItemStack(Material.LIME_BANNER);
         ItemMeta meta = item.getItemMeta();
 
-        meta.displayName(Component.text("깃발", NamedTextColor.GOLD, TextDecoration.BOLD)
+        meta.displayName(Component.text("영토 깃발", NamedTextColor.GOLD, TextDecoration.BOLD)
                 .decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
                 Component.text("빈 땅에 설치하면 영토를 주장합니다.", NamedTextColor.GRAY)
@@ -66,9 +66,9 @@ public final class FlagItem {
 
     public ShapedRecipe createRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(recipeKey, create());
-        recipe.shape("WWW", " S ");
-        recipe.setIngredient('W', Material.WHITE_WOOL);
-        recipe.setIngredient('S', Material.STICK);
+        recipe.shape("GDG", "GDG");
+        recipe.setIngredient('G', Material.GOLD_BLOCK);
+        recipe.setIngredient('D', Material.DIAMOND);
         recipe.setCategory(CraftingBookCategory.MISC);
         return recipe;
     }
