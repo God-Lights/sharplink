@@ -253,6 +253,62 @@ strong {
   font-weight: 700;
 }
 
+code {
+  font-family: ui-monospace, "SF Mono", "Cascadia Code", "Roboto Mono", Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 1px 5px;
+}
+
+/* Project list */
+
+.project-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.project-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.project-card:hover,
+.project-card:focus-visible {
+  border-color: var(--lime);
+  background: var(--tag-bg);
+}
+
+.project-name {
+  font-weight: 700;
+  font-size: 1.02rem;
+}
+
+.project-desc {
+  color: var(--text-dim);
+  font-size: 0.88rem;
+}
+
+.project-meta {
+  margin-top: 4px;
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  color: var(--lime);
+}
+
 /* Table */
 
 .table-wrap {
@@ -300,7 +356,7 @@ tbody tr:last-child td {
 .crafting-grid {
   display: grid;
   grid-template-columns: repeat(3, 56px);
-  grid-template-rows: repeat(2, 56px);
+  grid-template-rows: repeat(3, 56px);
   gap: 3px;
   padding: 6px;
   background: var(--surface);
@@ -318,6 +374,12 @@ tbody tr:last-child td {
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
 }
 
+.slot-empty {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
 .slot-swatch {
   width: 26px;
   height: 26px;
@@ -330,6 +392,14 @@ tbody tr:last-child td {
 
 .slot-diamond .slot-swatch {
   background: linear-gradient(155deg, var(--cyan), color-mix(in srgb, var(--cyan) 55%, black));
+}
+
+.slot-banner .slot-swatch {
+  width: 18px;
+  height: 26px;
+  border-radius: 1px;
+  background: #cac6b4;
+  clip-path: polygon(0 0, 100% 0, 100% 78%, 50% 100%, 0 78%);
 }
 
 .recipe-arrow {
@@ -394,6 +464,7 @@ tbody tr:last-child td {
 
 .legend-swatch.gold { background: var(--gold); }
 .legend-swatch.diamond { background: var(--cyan); }
+.legend-swatch.banner { background: #cac6b4; }
 
 /* Note */
 
@@ -509,7 +580,7 @@ footer.note .note-box .tag {
   .hero { padding: 44px 16px 28px; }
   .hero h1 { font-size: 1.55rem; }
   section { padding: 26px 0; }
-  .crafting-grid { grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(2, 46px); }
+  .crafting-grid { grid-template-columns: repeat(3, 46px); grid-template-rows: repeat(3, 46px); }
   .result-slot { width: 72px; height: 72px; }
   .branch { flex-direction: column; gap: 2px; }
 }
