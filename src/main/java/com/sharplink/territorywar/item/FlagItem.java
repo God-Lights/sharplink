@@ -66,9 +66,10 @@ public final class FlagItem {
 
     public ShapedRecipe createRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(recipeKey, create());
-        recipe.shape("GDG", "GDG");
+        recipe.shape("GDG", "GDG", " W ");
         recipe.setIngredient('G', Material.GOLD_BLOCK);
         recipe.setIngredient('D', Material.DIAMOND);
+        recipe.setIngredient('W', Material.WHITE_BANNER);
         recipe.setCategory(CraftingBookCategory.MISC);
         return recipe;
     }
