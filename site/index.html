@@ -11,24 +11,28 @@
 
 <header class="hero">
   <div class="hero-inner">
-    <span class="hero-icon" aria-hidden="true">🏳️</span>
+    <svg class="mark" viewBox="0 0 40 40" aria-hidden="true">
+      <rect x="6" y="4" width="4" height="32" fill="var(--text-dim)"/>
+      <polygon points="10,6 32,6 32,17 22,22 32,27 32,38 10,38" fill="var(--lime)"/>
+    </svg>
     <h1>땅따먹기 플러그인</h1>
-    <p class="tagline">서버는 정해진 크기로 제한되며, 그 안에서 최대 6개 팀이 영토를 두고 경쟁합니다.<br>
+    <p class="tagline">서버는 정해진 크기로 제한되며, 그 안에서 최대 6개 팀이 영토를 두고 경쟁합니다.
     가장 넓은 영토(가장 많은 깃발)를 보유한 팀이 최종 승리합니다.</p>
-    <div class="badges">
-      <span class="badge badge-beta">v1.0.0 · Beta</span>
-      <span class="badge">Paper 1.21.4</span>
-      <span class="badge">최대 6팀</span>
+    <div class="statusline">
+      <span class="hl">v1.0.0</span>
+      <span>BETA</span>
+      <span>PAPER 1.21.4</span>
+      <span>MAX 6 TEAMS</span>
     </div>
   </div>
 </header>
 
 <nav class="toc" aria-label="목차">
   <a href="#overview">한눈에 보기</a>
-  <a href="#teams">팀 창단 &amp; 합류</a>
-  <a href="#territory">영토 시스템</a>
+  <a href="#teams">팀</a>
+  <a href="#territory">영토</a>
   <a href="#war">전쟁</a>
-  <a href="#fall">팀 소멸</a>
+  <a href="#fall">소멸</a>
   <a href="#safezone">안전지대</a>
   <a href="#win">승리 조건</a>
   <a href="#flow">게임 흐름</a>
@@ -36,8 +40,8 @@
 
 <main>
 
-  <section id="overview" class="card">
-    <h2>한눈에 보기</h2>
+  <section id="overview">
+    <div class="section-head"><span class="tag">SUMMARY</span><h2>한눈에 보기</h2></div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>항목</th><th>내용</th></tr></thead>
@@ -56,8 +60,8 @@
     </div>
   </section>
 
-  <section id="teams" class="card">
-    <h2>1. 팀 창단 &amp; 합류</h2>
+  <section id="teams">
+    <div class="section-head"><span class="tag">TEAM</span><h2>1. 팀 창단 &amp; 합류</h2></div>
     <ul>
       <li>서버에는 <strong>최대 6개 팀</strong>만 존재할 수 있습니다.</li>
       <li>가장 먼저 들어온 6명이 각자 깃발을 제작해 설치하며 팀을 창단합니다. 그 지점이 팀 스폰이자 첫 영토가 되며, 팀 스폰끼리는 최소 500m 이상 떨어져 있습니다.</li>
@@ -68,24 +72,28 @@
     <h3>깃발 제작법</h3>
     <div class="recipe">
       <div class="crafting-grid" role="img" aria-label="금 블록, 다이아몬드, 금 블록이 두 줄로 배치된 제작법">
-        <div class="slot slot-gold">🟨<span>금 블록</span></div>
-        <div class="slot slot-diamond">🔷<span>다이아몬드</span></div>
-        <div class="slot slot-gold">🟨<span>금 블록</span></div>
-        <div class="slot slot-gold">🟨<span>금 블록</span></div>
-        <div class="slot slot-diamond">🔷<span>다이아몬드</span></div>
-        <div class="slot slot-gold">🟨<span>금 블록</span></div>
+        <div class="slot slot-gold"><span class="slot-swatch"></span></div>
+        <div class="slot slot-diamond"><span class="slot-swatch"></span></div>
+        <div class="slot slot-gold"><span class="slot-swatch"></span></div>
+        <div class="slot slot-gold"><span class="slot-swatch"></span></div>
+        <div class="slot slot-diamond"><span class="slot-swatch"></span></div>
+        <div class="slot slot-gold"><span class="slot-swatch"></span></div>
       </div>
-      <div class="recipe-arrow" aria-hidden="true">→</div>
+      <span class="recipe-arrow" aria-hidden="true">→</span>
       <div class="result-slot">
-        <span class="result-icon">🎌</span>
+        <span class="result-swatch" aria-hidden="true"></span>
         <span class="result-name">영토 깃발</span>
-        <span class="result-sub">(라임 배너)</span>
+        <span class="result-sub">LIME_BANNER</span>
       </div>
+    </div>
+    <div class="recipe-legend">
+      <span><i class="legend-swatch gold"></i>금 블록 × 4</span>
+      <span><i class="legend-swatch diamond"></i>다이아몬드 × 2</span>
     </div>
   </section>
 
-  <section id="territory" class="card">
-    <h2>2. 영토 시스템</h2>
+  <section id="territory">
+    <div class="section-head"><span class="tag">TERRITORY</span><h2>2. 영토 시스템</h2></div>
     <ul>
       <li>맵은 <strong>100 x 100 크기 구역</strong>으로 미리 나뉘어 있습니다.</li>
       <li>깃발 1개 = 구역 1칸 소유.</li>
@@ -93,8 +101,8 @@
     </ul>
   </section>
 
-  <section id="war" class="card">
-    <h2>3. 전쟁으로 영토 뺏기</h2>
+  <section id="war">
+    <div class="section-head"><span class="tag">WAR</span><h2>3. 전쟁으로 영토 뺏기</h2></div>
     <ul>
       <li>남의 깃발을 부수려면 <strong>우리 팀도 영토(깃발)를 최소 1개 이상 보유</strong>하고 있어야 합니다. 영토가 없는 팀은 공격 자체가 불가능합니다.</li>
       <li>적 깃발을 부순다고 해당 구역이 즉시 내 것이 되지는 않습니다. 일단 <strong>주인 없는 땅(무주지)</strong>이 되며, 그 위에 <strong>내 깃발을 새로 설치</strong>해야 비로소 내 영토가 됩니다.</li>
@@ -102,21 +110,21 @@
     </ul>
   </section>
 
-  <section id="fall" class="card">
-    <h2>4. 영토를 모두 잃으면</h2>
+  <section id="fall">
+    <div class="section-head"><span class="tag">FALL</span><h2>4. 영토를 모두 잃으면</h2></div>
     <p>팀의 마지막 깃발이 무너지면 그 팀은 소멸합니다.</p>
     <ul>
       <li><strong>팀장</strong> → 정복한 팀에 정식으로 편입(항복)</li>
       <li><strong>나머지 팀원</strong> → 무소속 "반편입자"로 전환. 개인적으로 아무 팀에나 들어갈 수 없고, <strong>반편입자 전원이 함께 뭉쳐야만</strong> 하나의 팀에 합류할 수 있습니다.</li>
     </ul>
-    <div class="callout">
-      <span class="callout-icon" aria-hidden="true">🚧</span>
+    <div class="note-box">
+      <span class="tag">NEXT</span>
       <p>추후 업데이트로, 이렇게 뭉친 반편입자들이 반란을 일으켜 독립할 수 있는 기능이 추가될 예정입니다.</p>
     </div>
   </section>
 
-  <section id="safezone" class="card">
-    <h2>5. 안전지대 — 서버 본부 (0, 0)</h2>
+  <section id="safezone">
+    <div class="section-head"><span class="tag">SAFE ZONE</span><h2>5. 안전지대 — 서버 본부 (0, 0)</h2></div>
     <ul>
       <li>좌표 (0, 0)은 어느 팀의 땅도 아닌 <strong>서버 소유의 중립지대</strong>입니다.</li>
       <li>서버 상점과 서버 깃발이 위치합니다.</li>
@@ -125,8 +133,8 @@
     </ul>
   </section>
 
-  <section id="win" class="card">
-    <h2>6. 승리 조건</h2>
+  <section id="win">
+    <div class="section-head"><span class="tag">WIN</span><h2>6. 승리 조건</h2></div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>조건</th><th>설명</th></tr></thead>
@@ -138,64 +146,67 @@
     </div>
   </section>
 
-  <section id="flow" class="card">
-    <h2>게임 흐름</h2>
-    <ol class="flowchart">
-      <li>
-        <span class="step-title">신규 플레이어 합류</span>
-        <span class="step-desc">6팀이 다 창단됐는가?</span>
-      </li>
-      <li class="branch">
-        <div class="branch-item">
-          <span class="step-title">아니오</span>
-          <span class="step-desc">깃발 제작 후 설치 = 팀 창단</span>
+  <section id="flow">
+    <div class="section-head"><span class="tag">FLOW</span><h2>게임 흐름</h2></div>
+    <div class="flow">
+      <div class="flow-step">
+        <span class="tag mono">01</span>
+        <div class="flow-body">
+          <p>신규 플레이어 합류</p>
+          <div class="branches">
+            <div class="branch"><span class="cond">6팀 미창단</span><span>깃발 제작 후 설치 = 팀 창단</span></div>
+            <div class="branch"><span class="cond">6팀 마감</span><span>기존 팀 중 무작위 배정 (반편입자)</span></div>
+          </div>
         </div>
-        <div class="branch-item">
-          <span class="step-title">예</span>
-          <span class="step-desc">기존 6팀 중 무작위 배정 = 반편입자</span>
+      </div>
+      <div class="flow-step">
+        <span class="tag mono">02</span>
+        <div class="flow-body">
+          <p>영토 보유 상태</p>
+          <p class="step-desc">깃발 설치로 영토 확장 · 조건 충족 시 적 깃발 파괴 시도</p>
         </div>
-      </li>
-      <li>
-        <span class="step-title">영토 보유 상태</span>
-        <span class="step-desc">깃발 설치로 영토 확장 · 조건 충족 시 적 깃발 파괴 시도</span>
-      </li>
-      <li class="branch">
-        <div class="branch-item">
-          <span class="step-title">자기 팀 영토 0칸</span>
-          <span class="step-desc">공격 불가</span>
+      </div>
+      <div class="flow-step">
+        <span class="tag mono">03</span>
+        <div class="flow-body">
+          <p>적 깃발 파괴 시도</p>
+          <div class="branches">
+            <div class="branch"><span class="cond">영토 0칸</span><span>공격 불가</span></div>
+            <div class="branch"><span class="cond">영토 1칸+</span><span>파괴 성공 → 해당 구역 무주지 전환</span></div>
+          </div>
         </div>
-        <div class="branch-item">
-          <span class="step-title">자기 팀 영토 1칸 이상</span>
-          <span class="step-desc">적 깃발 파괴 → 무주지 전환</span>
+      </div>
+      <div class="flow-step">
+        <span class="tag mono">04</span>
+        <div class="flow-body">
+          <p>상대 팀 영토가 0칸이 되었는가?</p>
+          <div class="branches">
+            <div class="branch"><span class="cond">아니오</span><span>무주지 재점령 경쟁 계속</span></div>
+            <div class="branch"><span class="cond">예</span><span>팀 소멸 — 팀장 편입 / 나머지 반편입자 전환</span></div>
+          </div>
         </div>
-      </li>
-      <li>
-        <span class="step-title">그 팀 영토가 0칸이 되었는가?</span>
-        <span class="step-desc">아니오 → 무주지 재점령 경쟁 계속 / 예 → 팀 소멸</span>
-      </li>
-      <li>
-        <span class="step-title">팀 소멸 처리</span>
-        <span class="step-desc">팀장 편입, 나머지 반편입자 전환 → 반편입자는 뭉쳐서 다른 팀 합류 가능</span>
-      </li>
-      <li class="branch">
-        <div class="branch-item">
-          <span class="step-title">전 영토 독점</span>
-          <span class="step-desc">즉시 게임 종료</span>
+      </div>
+      <div class="flow-step">
+        <span class="tag mono">05</span>
+        <div class="flow-body">
+          <p>승리 조건 확인</p>
+          <div class="branches">
+            <div class="branch"><span class="cond">전 영토 독점</span><span>즉시 게임 종료</span></div>
+            <div class="branch"><span class="cond">기간 만료</span><span>영토 최다 팀 승리</span></div>
+          </div>
         </div>
-        <div class="branch-item">
-          <span class="step-title">제한 기간 만료</span>
-          <span class="step-desc">영토 최다 팀 승리</span>
-        </div>
-      </li>
-    </ol>
+      </div>
+    </div>
   </section>
 
-  <footer class="callout note">
-    <span class="callout-icon" aria-hidden="true">📌</span>
-    <p>본 문서는 v1.0.0 beta 기준 초안입니다. 반란 시스템, 상점 화폐 등은 추후 업데이트로 추가될 예정입니다.</p>
-  </footer>
-
 </main>
+
+<footer class="note">
+  <div class="note-box">
+    <span class="tag">NOTE</span>
+    <p>본 문서는 v1.0.0 beta 기준 초안입니다. 반란 시스템, 상점 화폐 등은 추후 업데이트로 추가될 예정입니다.</p>
+  </div>
+</footer>
 
 </body>
 </html>
