@@ -19,7 +19,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -229,6 +231,20 @@ public final class FlagListener implements Listener {
                 gameManager.checkSingleTeamStanding();
             }
         }
+    }
+
+    /**
+     * 폭발은 파괴한 사람(팀)을 특정할 수 없어 영토 이전 규칙이 성립하지 않으므로,
+     * 깃발은 아예 폭발에 면역으로 만들어 배너와 영토 데이터가 어긋나지 않게 한다.
+     */
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityExplode(EntityExplodeEvent event) {
+        event.blockList().removeIf(block -> territoryManager.getOwnerIfExactMarker(block.getLocation()) != null);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockExplode(BlockExplodeEvent event) {
+        event.blockList().removeIf(block -> territoryManager.getOwnerIfExactMarker(block.getLocation()) != null);
     }
 
     @EventHandler
