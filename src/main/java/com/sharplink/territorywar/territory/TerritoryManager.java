@@ -8,6 +8,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -101,6 +103,20 @@ public final class TerritoryManager {
 
     public UUID getOwner(CellCoord cell) {
         return ownership.get(cell);
+    }
+
+    public BlockPos getMarker(CellCoord cell) {
+        return markers.get(cell);
+    }
+
+    public List<CellCoord> getCellsOwnedBy(UUID teamId) {
+        List<CellCoord> cells = new ArrayList<>();
+        for (Map.Entry<CellCoord, UUID> entry : ownership.entrySet()) {
+            if (teamId.equals(entry.getValue())) {
+                cells.add(entry.getKey());
+            }
+        }
+        return cells;
     }
 
     public boolean isServerTerritory(Location location) {

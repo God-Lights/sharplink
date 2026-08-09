@@ -1,8 +1,10 @@
 package com.sharplink.territorywar.command;
 
+import com.sharplink.territorywar.gui.FlagListMenu;
 import com.sharplink.territorywar.model.PlayerRecord;
 import com.sharplink.territorywar.model.Team;
 import com.sharplink.territorywar.team.TeamManager;
+import com.sharplink.territorywar.territory.CellCoord;
 import com.sharplink.territorywar.territory.TerritoryManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -44,7 +46,29 @@ public final class TeamCommand implements CommandExecutor, TabCompleter {
             return joinBloc(player, args[1]);
         }
 
-        player.sendMessage(Component.text("사용법: /team [info|join] <팀 이름>", NamedTextColor.RED));
+        if (args[0].equalsIgnoreCase("flags")) {
+            return showFlags(player);
+        }
+
+        player.sendMessage(Component.text("사용법: /team [info|join|flags] <팀 이름>", NamedTextColor.RED));
+        return true;
+    }
+
+    private boolean showFlags(Player player) {
+        PlayerRecord record = teamManager.getOrCreatePlayerRecord(player.getUniqueId());
+        if (record.getTeamId() == null) {
+            player.sendMessage(Component.text("소속 팀이 없어 깃발 목록을 볼 수 없습니다.", NamedTextColor.RED));
+            return true;
+        }
+
+        Team team = teamManager.getTeam(record.getTeamId());
+        List<CellCoord> cells = territoryManager.getCellsOwnedBy(team.getId());
+        if (cells.isEmpty()) {
+            player.sendMessage(Component.text("아직 보유한 영토가 없습니다.", NamedTextColor.YELLOW));
+            return true;
+        }
+
+        FlagListMenu.open(player, team.getName(), territoryManager, cells);
         return true;
     }
 
@@ -99,7 +123,7 @@ public final class TeamCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("info", "join").stream()
+            return List.of("info", "join", "flags").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }

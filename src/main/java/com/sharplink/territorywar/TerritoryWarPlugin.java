@@ -7,6 +7,7 @@ import com.sharplink.territorywar.game.GameManager;
 import com.sharplink.territorywar.item.FlagItem;
 import com.sharplink.territorywar.item.ServerFlagItem;
 import com.sharplink.territorywar.listener.FlagListener;
+import com.sharplink.territorywar.listener.FlagListMenuListener;
 import com.sharplink.territorywar.listener.PlayerJoinListener;
 import com.sharplink.territorywar.listener.SafeZoneListener;
 import com.sharplink.territorywar.listener.TeamChatListener;
@@ -43,6 +44,7 @@ public final class TerritoryWarPlugin extends JavaPlugin {
                 new FlagListener(this, teamManager, territoryManager, gameManager, flagItem, serverFlagItem), this);
         getServer().getPluginManager().registerEvents(new TeamChatListener(teamManager, territoryManager), this);
         getServer().getPluginManager().registerEvents(new SafeZoneListener(territoryManager), this);
+        getServer().getPluginManager().registerEvents(new FlagListMenuListener(), this);
 
         TeamCommand teamCommand = new TeamCommand(teamManager, territoryManager);
         getCommand("team").setExecutor(teamCommand);
