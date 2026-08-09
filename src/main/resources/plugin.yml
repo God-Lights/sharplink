@@ -13,6 +13,10 @@ commands:
     description: 깃발 아이템 지급 관리자 명령어
     usage: /flag [give|serverflag] <플레이어>
     permission: territorywar.admin
+  game:
+    description: 게임 시작/초기화/디버그 모드 관리자 명령어
+    usage: /game [start|reset|debug] ...
+    permission: territorywar.admin
 
 permissions:
   territorywar.admin:

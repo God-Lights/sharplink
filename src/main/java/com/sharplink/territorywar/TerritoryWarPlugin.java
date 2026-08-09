@@ -1,11 +1,14 @@
 package com.sharplink.territorywar;
 
 import com.sharplink.territorywar.command.FlagCommand;
+import com.sharplink.territorywar.command.GameCommand;
 import com.sharplink.territorywar.command.TeamCommand;
+import com.sharplink.territorywar.game.GameManager;
 import com.sharplink.territorywar.item.FlagItem;
 import com.sharplink.territorywar.item.ServerFlagItem;
 import com.sharplink.territorywar.listener.FlagListener;
 import com.sharplink.territorywar.listener.PlayerJoinListener;
+import com.sharplink.territorywar.listener.SafeZoneListener;
 import com.sharplink.territorywar.listener.TeamChatListener;
 import com.sharplink.territorywar.team.TeamManager;
 import com.sharplink.territorywar.territory.TerritoryManager;
@@ -16,7 +19,6 @@ public final class TerritoryWarPlugin extends JavaPlugin {
 
     private TeamManager teamManager;
     private TerritoryManager territoryManager;
-    private WinConditionManager winConditionManager;
 
     @Override
     public void onEnable() {
@@ -28,7 +30,9 @@ public final class TerritoryWarPlugin extends JavaPlugin {
         this.territoryManager = new TerritoryManager(this);
         territoryManager.load();
 
-        this.winConditionManager = new WinConditionManager(this, teamManager, territoryManager);
+        WinConditionManager winConditionManager = new WinConditionManager(this, teamManager, territoryManager);
+        GameManager gameManager = new GameManager(teamManager, territoryManager, winConditionManager);
+        winConditionManager.setGameManager(gameManager);
 
         FlagItem flagItem = new FlagItem(this);
         getServer().addRecipe(flagItem.createRecipe());
@@ -36,8 +40,9 @@ public final class TerritoryWarPlugin extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(teamManager), this);
         getServer().getPluginManager().registerEvents(
-                new FlagListener(this, teamManager, territoryManager, winConditionManager, flagItem, serverFlagItem), this);
-        getServer().getPluginManager().registerEvents(new TeamChatListener(teamManager), this);
+                new FlagListener(this, teamManager, territoryManager, gameManager, flagItem, serverFlagItem), this);
+        getServer().getPluginManager().registerEvents(new TeamChatListener(teamManager, territoryManager), this);
+        getServer().getPluginManager().registerEvents(new SafeZoneListener(territoryManager), this);
 
         TeamCommand teamCommand = new TeamCommand(teamManager, territoryManager);
         getCommand("team").setExecutor(teamCommand);
@@ -47,9 +52,11 @@ public final class TerritoryWarPlugin extends JavaPlugin {
         getCommand("flag").setExecutor(flagCommand);
         getCommand("flag").setTabCompleter(flagCommand);
 
-        winConditionManager.start();
+        GameCommand gameCommand = new GameCommand(gameManager);
+        getCommand("game").setExecutor(gameCommand);
+        getCommand("game").setTabCompleter(gameCommand);
 
-        getLogger().info("영토전쟁 게임이 활성화되었습니다.");
+        getLogger().info("영토전쟁 게임이 활성화되었습니다. /game start로 게임을 시작하세요.");
     }
 
     @Override

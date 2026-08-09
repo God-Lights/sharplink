@@ -93,8 +93,19 @@ public final class TerritoryManager {
         }
     }
 
+    public void resetAll() {
+        ownership.clear();
+        markers.clear();
+        saveAsync();
+    }
+
     public UUID getOwner(CellCoord cell) {
         return ownership.get(cell);
+    }
+
+    public boolean isServerTerritory(Location location) {
+        CellCoord cell = CellCoord.fromLocation(location, cellSize);
+        return SERVER_TEAM_ID.equals(ownership.get(cell));
     }
 
     /**

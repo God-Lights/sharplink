@@ -133,6 +133,12 @@ public final class TeamManager {
         }
     }
 
+    public void resetAll() {
+        teams.clear();
+        players.clear();
+        saveAsync();
+    }
+
     public PlayerRecord getOrCreatePlayerRecord(UUID uuid) {
         return players.computeIfAbsent(uuid, id -> new PlayerRecord(id, null, null, null));
     }

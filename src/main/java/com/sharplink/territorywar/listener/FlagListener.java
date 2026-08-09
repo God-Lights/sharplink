@@ -1,6 +1,7 @@
 package com.sharplink.territorywar.listener;
 
 import com.sharplink.territorywar.TerritoryWarPlugin;
+import com.sharplink.territorywar.game.GameManager;
 import com.sharplink.territorywar.item.FlagItem;
 import com.sharplink.territorywar.item.ServerFlagItem;
 import com.sharplink.territorywar.model.PlayerRecord;
@@ -8,10 +9,10 @@ import com.sharplink.territorywar.model.Team;
 import com.sharplink.territorywar.team.TeamManager;
 import com.sharplink.territorywar.territory.CellCoord;
 import com.sharplink.territorywar.territory.TerritoryManager;
-import com.sharplink.territorywar.win.WinConditionManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,17 +31,17 @@ public final class FlagListener implements Listener {
     private final TerritoryWarPlugin plugin;
     private final TeamManager teamManager;
     private final TerritoryManager territoryManager;
-    private final WinConditionManager winConditionManager;
+    private final GameManager gameManager;
     private final FlagItem flagItem;
     private final ServerFlagItem serverFlagItem;
     private final String worldName;
 
     public FlagListener(TerritoryWarPlugin plugin, TeamManager teamManager, TerritoryManager territoryManager,
-                         WinConditionManager winConditionManager, FlagItem flagItem, ServerFlagItem serverFlagItem) {
+                         GameManager gameManager, FlagItem flagItem, ServerFlagItem serverFlagItem) {
         this.plugin = plugin;
         this.teamManager = teamManager;
         this.territoryManager = territoryManager;
-        this.winConditionManager = winConditionManager;
+        this.gameManager = gameManager;
         this.flagItem = flagItem;
         this.serverFlagItem = serverFlagItem;
         this.worldName = plugin.getConfig().getString("world", "world");
@@ -71,9 +72,14 @@ public final class FlagListener implements Listener {
             return;
         }
 
-        if (winConditionManager.isGameEnded()) {
+        if (gameManager.isEnded()) {
             event.setCancelled(true);
             player.sendMessage(Component.text("게임이 이미 종료되었습니다.", NamedTextColor.RED));
+            return;
+        }
+        if (!gameManager.isRunning() && !gameManager.isDebugMode()) {
+            event.setCancelled(true);
+            player.sendMessage(Component.text("게임이 아직 시작되지 않았습니다. 관리자가 /game start로 시작해야 합니다.", NamedTextColor.RED));
             return;
         }
 
@@ -95,7 +101,7 @@ public final class FlagListener implements Listener {
             player.sendMessage(Component.text("이미 최대 " + teamManager.getMaxTeams() + "개 팀이 창단되었습니다. 곧 기존 팀에 배정됩니다.", NamedTextColor.RED));
             return;
         }
-        if (!teamManager.isSpawnFarEnough(location)) {
+        if (!gameManager.isDebugMode() && !teamManager.isSpawnFarEnough(location)) {
             event.setCancelled(true);
             player.sendMessage(Component.text("다른 팀의 스폰과 최소 " + (int) teamManager.getMinSpawnDistance() + "m 이상 떨어진 곳에 설치해야 합니다.", NamedTextColor.RED));
             return;
@@ -103,6 +109,7 @@ public final class FlagListener implements Listener {
 
         Team team = teamManager.createTeam(player.getName() + "팀", player, location);
         territoryManager.claim(cell, team.getId(), location);
+        anchorBedrockBelow(location);
 
         player.sendMessage(Component.text("\"" + team.getName() + "\" 팀을 창단했습니다! 이곳이 팀의 스폰이자 첫 영토입니다.", NamedTextColor.GREEN));
     }
@@ -123,6 +130,7 @@ public final class FlagListener implements Listener {
         }
 
         territoryManager.claim(cell, team.getId(), location);
+        anchorBedrockBelow(location);
         player.sendMessage(Component.text("영토를 확장했습니다! 현재 " + territoryManager.countCells(team.getId()) + "칸 보유 중.", NamedTextColor.GREEN));
     }
 
@@ -141,6 +149,7 @@ public final class FlagListener implements Listener {
         }
 
         territoryManager.claim(cell, TerritoryManager.SERVER_TEAM_ID, location);
+        anchorBedrockBelow(location);
         location.getWorld().setSpawnLocation(location);
 
         plugin.getServer().broadcast(Component.text("서버 깃발이 설치되었습니다. 이곳이 서버 스폰이자 서버 영토입니다.", NamedTextColor.AQUA));
@@ -155,6 +164,11 @@ public final class FlagListener implements Listener {
 
         territoryManager.vacate(cell);
         plugin.getServer().broadcast(Component.text("서버 깃발이 제거되었습니다.", NamedTextColor.AQUA));
+    }
+
+    /** 지지 블록을 캐서 깃발이 물리적으로 뜯겨나가는 것을 막는다. */
+    private void anchorBedrockBelow(Location flagLocation) {
+        flagLocation.getBlock().getRelative(0, -1, 0).setType(Material.BEDROCK);
     }
 
     @EventHandler
@@ -173,7 +187,7 @@ public final class FlagListener implements Listener {
             return;
         }
 
-        if (winConditionManager.isGameEnded()) {
+        if (gameManager.isEnded()) {
             event.setCancelled(true);
             breaker.sendMessage(Component.text("게임이 이미 종료되었습니다.", NamedTextColor.RED));
             return;
@@ -212,7 +226,7 @@ public final class FlagListener implements Listener {
                 plugin.getServer().broadcast(Component.text(
                         "\"" + ownerTeam.getName() + "\" 팀이 모든 영토를 잃고 소멸했습니다. 팀장은 \"" + conqueror.getName() + "\" 팀에 편입되었습니다.",
                         NamedTextColor.GOLD));
-                winConditionManager.checkSingleTeamStanding();
+                gameManager.checkSingleTeamStanding();
             }
         }
     }
