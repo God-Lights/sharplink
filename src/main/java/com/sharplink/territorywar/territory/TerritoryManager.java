@@ -124,6 +124,11 @@ public final class TerritoryManager {
         return SERVER_TEAM_ID.equals(ownership.get(cell));
     }
 
+    public boolean isClaimed(Location location) {
+        CellCoord cell = CellCoord.fromLocation(location, cellSize);
+        return ownership.containsKey(cell);
+    }
+
     /**
      * 주어진 위치가 어떤 셀의 "정확한 깃발 설치 좌표"와 일치할 때만 그 셀의 소유 팀을 반환한다.
      * 배너는 아이템 태그가 블록으로 전달되지 않으므로, 블록 재질이 아니라 이 좌표 기록으로 깃발 여부를 판별한다.
