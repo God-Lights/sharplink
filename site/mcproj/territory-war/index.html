@@ -23,6 +23,7 @@
       <span>BETA</span>
       <span>PAPER 1.21.4</span>
       <span>MAX 6 TEAMS</span>
+      <span>/game start</span>
     </div>
   </div>
 </header>
@@ -34,7 +35,9 @@
   <a href="#war">전쟁</a>
   <a href="#fall">소멸</a>
   <a href="#safezone">안전지대</a>
+  <a href="#gamemgmt">게임 관리</a>
   <a href="#win">승리 조건</a>
+  <a href="#commands">명령어</a>
   <a href="#flow">게임 흐름</a>
 </nav>
 
@@ -53,7 +56,10 @@
           <tr><td>파괴 후 처리</td><td>즉시 소유권 이전 아님 → 무주지 → 재설치해야 확정</td></tr>
           <tr><td>팀 소멸 시</td><td>팀장은 정복 팀에 편입 / 나머지는 무소속 "반편입자"</td></tr>
           <tr><td>후발 합류자</td><td>6팀 마감 후 합류 시 무작위 배정, 반편입자 신분</td></tr>
-          <tr><td>안전지대</td><td>(0, 0) 서버 본부 — PvP 불가, 전체 채팅 허용</td></tr>
+          <tr><td>영토 내 몬스터</td><td>클레임된 구역(서버 안전지대 포함)에는 몬스터가 스폰·유입 불가</td></tr>
+          <tr><td>영토 진입 알림</td><td>액션바 표시 + 적 영토에서는 발광, 발밑에는 소유 팀 색 파티클</td></tr>
+          <tr><td>안전지대</td><td>관리자가 설치한 서버 깃발 구역 — PvP 불가, 전체 채팅 허용, 서버 스폰 지정</td></tr>
+          <tr><td>게임 시작</td><td><code>/game start</code> 전에는 디버그 모드가 아닌 이상 깃발 설치·파괴 불가</td></tr>
           <tr><td>승리 조건</td><td>전 영토 독점 즉시 종료 또는 제한 기간 만료 시 영토 최다 팀 승리</td></tr>
         </tbody>
       </table>
@@ -94,14 +100,35 @@
       <span><i class="legend-swatch diamond"></i>다이아몬드 × 2</span>
       <span><i class="legend-swatch banner"></i>흰색 배너 × 1</span>
     </div>
+    <div class="note-box">
+      <span class="tag">DEFENSE</span>
+      <p>깃발을 설치하면 바로 아래 블록이 자동으로 <strong>베드락</strong>으로 바뀝니다. 받침 블록을 캐서 깃발을 우회 파괴할 수 없습니다. 또한 깃발은 <strong>폭발에 면역</strong>이라 TNT 등으로 룰을 우회해 영토를 지울 수 없습니다 — 정식 파괴(우클릭 없이 채굴)로만 무너뜨릴 수 있습니다.</p>
+    </div>
   </section>
 
   <section id="territory">
     <div class="section-head"><span class="tag">TERRITORY</span><h2>2. 영토 시스템</h2></div>
     <ul>
-      <li>맵은 <strong>100 x 100 크기 구역</strong>으로 미리 나뉘어 있습니다.</li>
-      <li>깃발 1개 = 구역 1칸 소유.</li>
-      <li>깃발이 많을수록 영토가 넓어지고, 승리에 가까워집니다.</li>
+      <li>맵은 월드 원점 기준 <strong>100 x 100 크기 구역</strong>으로 미리 나뉜 고정 격자입니다. 깃발은 구역 안 아무 곳에나 설치되며, 구역 중앙일 필요는 없습니다.</li>
+      <li>깃발 1개 = 구역 1칸 소유. 깃발이 많을수록 영토가 넓어지고, 승리에 가까워집니다.</li>
+      <li>새 구역을 점령(창단 또는 파괴 후 재설치)하면 우리 팀 기준 <strong>몇 번째 영토</strong>인지 순번이 매겨집니다.</li>
+    </ul>
+
+    <h3>영토 진입 알림</h3>
+    <ul>
+      <li>구역 경계를 넘어 이동하면 <strong>액션바</strong>에 즉시 상태가 표시됩니다.
+        <br>— 내 영토: <code>내 영토에 들어왔습니다. (N번째 영토)</code>
+        <br>— 적 영토: <code>"팀 이름" 팀의 영토입니다!</code>
+        <br>— 안전지대: <code>안전지대에 들어왔습니다.</code>
+      </li>
+      <li>적 영토 안에 있는 동안에는 <strong>발광(Glowing)</strong> 효과가 계속 유지되어 위치가 드러납니다.</li>
+      <li>클레임된 구역(내 땅·적 땅·안전지대) 안에 있는 동안에는 발밑에 소유 팀 색깔의 파티클이 뿌려집니다 — 내 땅은 <strong>초록</strong>, 적 땅은 <strong>빨강</strong>, 안전지대는 <strong>하늘색</strong>.</li>
+    </ul>
+
+    <h3>보유 영토 한눈에 보기</h3>
+    <ul>
+      <li><code>/team flags</code> — 우리 팀이 소유한 모든 깃발 위치를 GUI 창 하나로 모아 보여줍니다. 항목을 클릭하면 나침반이 해당 깃발을 가리키도록 즉시 설정됩니다.</li>
+      <li>깃발을 우클릭해도 소유 팀과 우리 팀의 현재 보유 칸 수를 확인하고 나침반을 그 깃발로 맞출 수 있습니다.</li>
     </ul>
   </section>
 
@@ -128,17 +155,33 @@
   </section>
 
   <section id="safezone">
-    <div class="section-head"><span class="tag">SAFE ZONE</span><h2>5. 안전지대 — 서버 본부 (0, 0)</h2></div>
+    <div class="section-head"><span class="tag">SAFE ZONE</span><h2>5. 안전지대 &amp; 몬스터 보호</h2></div>
     <ul>
-      <li>좌표 (0, 0)은 어느 팀의 땅도 아닌 <strong>서버 소유의 중립지대</strong>입니다.</li>
-      <li>서버 상점과 서버 깃발이 위치합니다.</li>
+      <li>안전지대는 고정된 좌표가 아니라, <strong>관리자가 서버 깃발(흰색 배너)을 설치한 구역</strong>입니다. 팀 깃발과 달리 제작법이 없고 관리자만 지급·설치할 수 있습니다.</li>
+      <li>서버 깃발을 설치하면 그 구역이 어느 팀도 아닌 <strong>서버 소유 중립지대</strong>가 되고, 동시에 <strong>서버 스폰 지점</strong>이 그 위치로 설정됩니다.</li>
       <li>이 구역 안에서는 <strong>PvP가 금지</strong>됩니다.</li>
       <li>평소에는 팀원끼리만 대화할 수 있지만, 이 구역 안에서는 <strong>전체 채팅</strong>이 열립니다.</li>
+      <li>서버 깃발도 팀 깃발과 마찬가지로 아래 블록이 베드락으로 고정되고 폭발에 면역입니다.</li>
+    </ul>
+    <h3>영토 내 몬스터 차단</h3>
+    <ul>
+      <li>이미 클레임된 구역(팀 영토 + 안전지대)에서는 <strong>몬스터가 스폰되지 않습니다.</strong></li>
+      <li>바깥에서 흘러 들어온 몬스터도 주기적으로 감지되어 자동으로 제거됩니다.</li>
+    </ul>
+  </section>
+
+  <section id="gamemgmt">
+    <div class="section-head"><span class="tag">GAME</span><h2>6. 게임 진행 관리 (관리자)</h2></div>
+    <ul>
+      <li>플러그인이 켜져 있어도 <strong>게임은 자동으로 시작되지 않습니다.</strong> 관리자가 <code>/game start</code>를 입력하기 전까지는 깃발 설치·파괴가 모두 막혀 있습니다.</li>
+      <li><code>/game start</code> — 게임을 시작하고, 제한 기간(승리 조건) 타이머를 함께 가동합니다.</li>
+      <li><code>/game reset</code> — 진행 중인 게임을 강제로 종료하고, 모든 팀·영토 데이터를 초기 상태로 완전히 초기화합니다.</li>
+      <li><code>/game debug on|off</code> — 테스트용 디버그 모드. 켜져 있으면 게임 시작 전이라도 깃발 설치·파괴가 가능하고, 팀 스폰 간 500m 최소 거리 제한도 무시됩니다.</li>
     </ul>
   </section>
 
   <section id="win">
-    <div class="section-head"><span class="tag">WIN</span><h2>6. 승리 조건</h2></div>
+    <div class="section-head"><span class="tag">WIN</span><h2>7. 승리 조건</h2></div>
     <div class="table-wrap">
       <table>
         <thead><tr><th>조건</th><th>설명</th></tr></thead>
@@ -150,9 +193,49 @@
     </div>
   </section>
 
+  <section id="commands">
+    <div class="section-head"><span class="tag">CMD</span><h2>8. 명령어 모음</h2></div>
+    <h3>플레이어</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>명령어</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><code>/team info</code></td><td>내 팀 정보(소속, 역할, 팀원 수, 보유 영토 칸 수) 확인. 인자 없이 <code>/team</code>만 입력해도 동일</td></tr>
+          <tr><td><code>/team flags</code></td><td>우리 팀이 보유한 모든 깃발 위치를 GUI로 확인, 클릭 시 나침반 설정</td></tr>
+          <tr><td><code>/team join &lt;팀 이름&gt;</code></td><td>무소속 반편입자 무리 전체를 지정한 팀으로 합류시킴</td></tr>
+          <tr><td>깃발 우클릭</td><td>소유 팀과 우리 팀의 보유 칸 수 확인 + 나침반을 해당 깃발로 설정</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <h3>관리자 (territorywar.admin)</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>명령어</th><th>설명</th></tr></thead>
+        <tbody>
+          <tr><td><code>/game start</code></td><td>게임 시작 + 승리 조건 타이머 가동</td></tr>
+          <tr><td><code>/game reset</code></td><td>게임 강제 종료 + 팀·영토 데이터 전체 초기화</td></tr>
+          <tr><td><code>/game debug on|off</code></td><td>테스트용 디버그 모드 전환</td></tr>
+          <tr><td><code>/flag give [플레이어]</code></td><td>팀 깃발 아이템 지급 (테스트용)</td></tr>
+          <tr><td><code>/flag serverflag [플레이어]</code></td><td>서버 깃발(안전지대용) 아이템 지급</td></tr>
+          <tr><td><code>/team displace &lt;플레이어...&gt;</code></td><td>지정한 온라인 플레이어들을 강제로 같은 반편입자 무리로 전환 (테스트용)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
   <section id="flow">
     <div class="section-head"><span class="tag">FLOW</span><h2>게임 흐름</h2></div>
     <div class="flow">
+      <div class="flow-step">
+        <span class="tag mono">00</span>
+        <div class="flow-body">
+          <p>관리자가 <code>/game start</code> 실행</p>
+          <div class="branches">
+            <div class="branch"><span class="cond">시작 전</span><span>디버그 모드가 아니면 깃발 설치·파괴 전면 차단</span></div>
+            <div class="branch"><span class="cond">시작 후</span><span>승리 조건 타이머 가동, 아래 흐름 진행 가능</span></div>
+          </div>
+        </div>
+      </div>
       <div class="flow-step">
         <span class="tag mono">01</span>
         <div class="flow-body">
@@ -167,7 +250,7 @@
         <span class="tag mono">02</span>
         <div class="flow-body">
           <p>영토 보유 상태</p>
-          <p class="step-desc">깃발 설치로 영토 확장 · 조건 충족 시 적 깃발 파괴 시도</p>
+          <p class="step-desc">깃발 설치로 영토 확장 · 진입 시 액션바/발광/파티클로 상태 표시 · 조건 충족 시 적 깃발 파괴 시도</p>
         </div>
       </div>
       <div class="flow-step">
@@ -208,7 +291,7 @@
 <footer class="note">
   <div class="note-box">
     <span class="tag">NOTE</span>
-    <p>본 문서는 v1.0.0 beta 기준 초안입니다. 반란 시스템, 상점 화폐 등은 추후 업데이트로 추가될 예정입니다.</p>
+    <p>본 문서는 v1.0.0 beta 기준으로, 기능이 추가·변경될 때마다 함께 갱신됩니다. 반란 시스템, 상점 화폐 등은 추후 업데이트로 추가될 예정입니다.</p>
   </div>
 </footer>
 
