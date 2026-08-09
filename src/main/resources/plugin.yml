@@ -7,8 +7,8 @@ description: 야생 서버용 영토전쟁(깃발 정복) 게임 플러그인
 
 commands:
   team:
-    description: 팀 정보 확인, 깃발 목록, 반편입자 합류 명령어
-    usage: /team [info|flags|join] <팀 이름>
+    description: 팀 정보 확인, 깃발 목록, 반편입자 합류/강제전환 명령어
+    usage: /team [info|flags|join|displace] <팀 이름 또는 플레이어...>
   flag:
     description: 깃발 아이템 지급 관리자 명령어
     usage: /flag [give|serverflag] <플레이어>

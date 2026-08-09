@@ -263,4 +263,28 @@ public final class TeamManager {
         }
         saveAsync();
     }
+
+    /**
+     * 테스트/관리자용: 지정된 플레이어들을 강제로 같은 반편입자 무리로 전환한다.
+     * 실제 팀 소멸 없이도 /team join 흐름을 바로 테스트할 수 있게 해준다.
+     *
+     * @return 새로 부여된 무리 id
+     */
+    public UUID forceDisplace(List<UUID> playerUuids) {
+        UUID blocId = UUID.randomUUID();
+        for (UUID uuid : playerUuids) {
+            PlayerRecord record = getOrCreatePlayerRecord(uuid);
+            if (record.getTeamId() != null) {
+                Team oldTeam = teams.get(record.getTeamId());
+                if (oldTeam != null) {
+                    oldTeam.getMembers().remove(uuid);
+                }
+            }
+            record.setTeamId(null);
+            record.setRole(PlayerRole.SEMI_MEMBER);
+            record.setDisplacedBlocId(blocId);
+        }
+        saveAsync();
+        return blocId;
+    }
 }

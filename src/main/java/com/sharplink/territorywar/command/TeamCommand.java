@@ -8,12 +8,14 @@ import com.sharplink.territorywar.territory.CellCoord;
 import com.sharplink.territorywar.territory.TerritoryManager;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -50,7 +52,41 @@ public final class TeamCommand implements CommandExecutor, TabCompleter {
             return showFlags(player);
         }
 
-        player.sendMessage(Component.text("사용법: /team [info|join|flags] <팀 이름>", NamedTextColor.RED));
+        if (args[0].equalsIgnoreCase("displace")) {
+            return forceDisplace(player, args);
+        }
+
+        player.sendMessage(Component.text("사용법: /team [info|join|flags|displace] <팀 이름>", NamedTextColor.RED));
+        return true;
+    }
+
+    private boolean forceDisplace(Player sender, String[] args) {
+        if (!sender.hasPermission("territorywar.admin")) {
+            sender.sendMessage(Component.text("권한이 없습니다.", NamedTextColor.RED));
+            return true;
+        }
+        if (args.length < 2) {
+            sender.sendMessage(Component.text("사용법: /team displace <플레이어1> [플레이어2] ...", NamedTextColor.RED));
+            return true;
+        }
+
+        List<UUID> targets = new ArrayList<>();
+        List<String> notFound = new ArrayList<>();
+        for (int i = 1; i < args.length; i++) {
+            Player target = Bukkit.getPlayerExact(args[i]);
+            if (target == null) {
+                notFound.add(args[i]);
+            } else {
+                targets.add(target.getUniqueId());
+            }
+        }
+        if (!notFound.isEmpty()) {
+            sender.sendMessage(Component.text("온라인 상태의 플레이어를 찾을 수 없습니다: " + String.join(", ", notFound), NamedTextColor.RED));
+            return true;
+        }
+
+        teamManager.forceDisplace(targets);
+        sender.sendMessage(Component.text(targets.size() + "명을 반편입자 무리로 강제 전환했습니다. (테스트용)", NamedTextColor.GREEN));
         return true;
     }
 
@@ -123,12 +159,15 @@ public final class TeamCommand implements CommandExecutor, TabCompleter {
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         if (args.length == 1) {
-            return List.of("info", "join", "flags").stream()
+            return List.of("info", "join", "flags", "displace").stream()
                     .filter(s -> s.startsWith(args[0].toLowerCase()))
                     .toList();
         }
         if (args.length == 2 && args[0].equalsIgnoreCase("join")) {
             return teamManager.getActiveTeams().stream().map(Team::getName).toList();
+        }
+        if (args.length >= 2 && args[0].equalsIgnoreCase("displace")) {
+            return Bukkit.getOnlinePlayers().stream().map(Player::getName).toList();
         }
         return List.of();
     }
