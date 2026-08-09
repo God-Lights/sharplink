@@ -69,6 +69,7 @@ public final class TeamManager {
                 for (String memberUuid : section.getStringList("members")) {
                     team.getMembers().add(UUID.fromString(memberUuid));
                 }
+                team.setClaimCount(section.getInt("claimCount", 0));
                 teams.put(id, team);
             }
         }
@@ -106,6 +107,7 @@ public final class TeamManager {
             yaml.set(base + ".spawn.x", team.getSpawnPoint().x());
             yaml.set(base + ".spawn.y", team.getSpawnPoint().y());
             yaml.set(base + ".spawn.z", team.getSpawnPoint().z());
+            yaml.set(base + ".claimCount", team.getClaimCount());
         }
 
         for (PlayerRecord record : players.values()) {
@@ -149,6 +151,17 @@ public final class TeamManager {
 
     public Collection<Team> getActiveTeams() {
         return teams.values();
+    }
+
+    /** @return 이번에 새로 부여된 순번(1부터 시작), 팀이 없으면 0 */
+    public int incrementClaimCount(UUID teamId) {
+        Team team = teams.get(teamId);
+        if (team == null) {
+            return 0;
+        }
+        int next = team.incrementClaimCount();
+        saveAsync();
+        return next;
     }
 
     public boolean canFoundNewTeam() {

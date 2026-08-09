@@ -24,6 +24,7 @@ public final class TerritoryManager {
     private final File dataFile;
     private final Map<CellCoord, UUID> ownership = new ConcurrentHashMap<>();
     private final Map<CellCoord, BlockPos> markers = new ConcurrentHashMap<>();
+    private final Map<CellCoord, Integer> claimIndex = new ConcurrentHashMap<>();
     private final int cellSize;
 
     public TerritoryManager(TerritoryWarPlugin plugin) {
@@ -67,6 +68,18 @@ public final class TerritoryManager {
                 }
             }
         }
+
+        ConfigurationSection claimIndexSection = yaml.getConfigurationSection("claimIndex");
+        if (claimIndexSection != null) {
+            for (String key : claimIndexSection.getKeys(false)) {
+                try {
+                    CellCoord cell = CellCoord.deserialize(key);
+                    claimIndex.put(cell, claimIndexSection.getInt(key));
+                } catch (IllegalArgumentException ignored) {
+                    // 잘못된 항목은 건너뜀
+                }
+            }
+        }
     }
 
     public void save() {
@@ -76,6 +89,9 @@ public final class TerritoryManager {
         }
         for (Map.Entry<CellCoord, BlockPos> entry : markers.entrySet()) {
             yaml.set("markers." + entry.getKey().serialize(), entry.getValue().serialize());
+        }
+        for (Map.Entry<CellCoord, Integer> entry : claimIndex.entrySet()) {
+            yaml.set("claimIndex." + entry.getKey().serialize(), entry.getValue());
         }
         try {
             if (!plugin.getDataFolder().exists()) {
@@ -98,6 +114,7 @@ public final class TerritoryManager {
     public void resetAll() {
         ownership.clear();
         markers.clear();
+        claimIndex.clear();
         saveAsync();
     }
 
@@ -151,6 +168,16 @@ public final class TerritoryManager {
     public void vacate(CellCoord cell) {
         ownership.remove(cell);
         markers.remove(cell);
+        claimIndex.remove(cell);
+        saveAsync();
+    }
+
+    public int getClaimIndex(CellCoord cell) {
+        return claimIndex.getOrDefault(cell, 0);
+    }
+
+    public void setClaimIndex(CellCoord cell, int index) {
+        claimIndex.put(cell, index);
         saveAsync();
     }
 

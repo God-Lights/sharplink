@@ -111,6 +111,7 @@ public final class FlagListener implements Listener {
 
         Team team = teamManager.createTeam(player.getName() + "팀", player, location);
         territoryManager.claim(cell, team.getId(), location);
+        territoryManager.setClaimIndex(cell, teamManager.incrementClaimCount(team.getId()));
         anchorBedrockBelow(location);
 
         player.sendMessage(Component.text("\"" + team.getName() + "\" 팀을 창단했습니다! 이곳이 팀의 스폰이자 첫 영토입니다.", NamedTextColor.GREEN));
@@ -132,6 +133,7 @@ public final class FlagListener implements Listener {
         }
 
         territoryManager.claim(cell, team.getId(), location);
+        territoryManager.setClaimIndex(cell, teamManager.incrementClaimCount(team.getId()));
         anchorBedrockBelow(location);
         player.sendMessage(Component.text("영토를 확장했습니다! 현재 " + territoryManager.countCells(team.getId()) + "칸 보유 중.", NamedTextColor.GREEN));
     }

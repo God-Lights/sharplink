@@ -11,6 +11,8 @@ public final class Team {
     private UUID leaderUuid;
     private final Set<UUID> members = new LinkedHashSet<>();
     private SpawnPoint spawnPoint;
+    /** 이 팀이 지금까지 깃발을 세운 총 횟수. 칸에 "몇 번째 영토"인지 표시하는 데 쓰인다. */
+    private int claimCount = 0;
 
     public Team(UUID id, String name, UUID leaderUuid, SpawnPoint spawnPoint) {
         this.id = id;
@@ -50,5 +52,17 @@ public final class Team {
 
     public void setSpawnPoint(SpawnPoint spawnPoint) {
         this.spawnPoint = spawnPoint;
+    }
+
+    public int getClaimCount() {
+        return claimCount;
+    }
+
+    public void setClaimCount(int claimCount) {
+        this.claimCount = claimCount;
+    }
+
+    public int incrementClaimCount() {
+        return ++claimCount;
     }
 }

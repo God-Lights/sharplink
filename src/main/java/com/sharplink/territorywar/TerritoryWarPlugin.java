@@ -12,11 +12,10 @@ import com.sharplink.territorywar.listener.MonsterProtectionListener;
 import com.sharplink.territorywar.listener.PlayerJoinListener;
 import com.sharplink.territorywar.listener.SafeZoneListener;
 import com.sharplink.territorywar.listener.TeamChatListener;
-import com.sharplink.territorywar.task.TerritoryBorderTask;
+import com.sharplink.territorywar.listener.TerritoryZoneListener;
 import com.sharplink.territorywar.team.TeamManager;
 import com.sharplink.territorywar.territory.TerritoryManager;
 import com.sharplink.territorywar.win.WinConditionManager;
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class TerritoryWarPlugin extends JavaPlugin {
@@ -54,7 +53,9 @@ public final class TerritoryWarPlugin extends JavaPlugin {
         getServer().getPluginManager().registerEvents(monsterProtectionListener, this);
         monsterProtectionListener.startPeriodicPurge(this);
 
-        Bukkit.getScheduler().runTaskTimer(this, new TerritoryBorderTask(teamManager, territoryManager, worldName), 20L, 20L);
+        TerritoryZoneListener territoryZoneListener = new TerritoryZoneListener(teamManager, territoryManager, worldName);
+        getServer().getPluginManager().registerEvents(territoryZoneListener, this);
+        territoryZoneListener.startPeriodicEffects(this);
 
         TeamCommand teamCommand = new TeamCommand(teamManager, territoryManager);
         getCommand("team").setExecutor(teamCommand);
