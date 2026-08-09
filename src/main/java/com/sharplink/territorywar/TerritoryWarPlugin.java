@@ -1,9 +1,12 @@
 package com.sharplink.territorywar;
 
+import com.sharplink.territorywar.command.FlagCommand;
 import com.sharplink.territorywar.command.TeamCommand;
 import com.sharplink.territorywar.item.FlagItem;
+import com.sharplink.territorywar.item.ServerFlagItem;
 import com.sharplink.territorywar.listener.FlagListener;
 import com.sharplink.territorywar.listener.PlayerJoinListener;
+import com.sharplink.territorywar.listener.TeamChatListener;
 import com.sharplink.territorywar.team.TeamManager;
 import com.sharplink.territorywar.territory.TerritoryManager;
 import com.sharplink.territorywar.win.WinConditionManager;
@@ -29,14 +32,20 @@ public final class TerritoryWarPlugin extends JavaPlugin {
 
         FlagItem flagItem = new FlagItem(this);
         getServer().addRecipe(flagItem.createRecipe());
+        ServerFlagItem serverFlagItem = new ServerFlagItem(this);
 
         getServer().getPluginManager().registerEvents(new PlayerJoinListener(teamManager), this);
         getServer().getPluginManager().registerEvents(
-                new FlagListener(this, teamManager, territoryManager, winConditionManager, flagItem), this);
+                new FlagListener(this, teamManager, territoryManager, winConditionManager, flagItem, serverFlagItem), this);
+        getServer().getPluginManager().registerEvents(new TeamChatListener(teamManager), this);
 
         TeamCommand teamCommand = new TeamCommand(teamManager, territoryManager);
         getCommand("team").setExecutor(teamCommand);
         getCommand("team").setTabCompleter(teamCommand);
+
+        FlagCommand flagCommand = new FlagCommand(flagItem, serverFlagItem);
+        getCommand("flag").setExecutor(flagCommand);
+        getCommand("flag").setTabCompleter(flagCommand);
 
         winConditionManager.start();
 

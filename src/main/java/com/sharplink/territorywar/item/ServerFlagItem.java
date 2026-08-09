@@ -8,32 +8,31 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.recipe.CraftingBookCategory;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.List;
 
-public final class FlagItem {
+/**
+ * 서버 소유 중립 영토를 표시하는 깃발. 제작법이 없고 관리자 명령어로만 지급된다.
+ */
+public final class ServerFlagItem {
 
     private final NamespacedKey key;
-    private final NamespacedKey recipeKey;
 
-    public FlagItem(TerritoryWarPlugin plugin) {
-        this.key = new NamespacedKey(plugin, "flag");
-        this.recipeKey = new NamespacedKey(plugin, "flag_recipe");
+    public ServerFlagItem(TerritoryWarPlugin plugin) {
+        this.key = new NamespacedKey(plugin, "server_flag");
     }
 
     public ItemStack create() {
-        ItemStack item = new ItemStack(Material.LIME_BANNER);
+        ItemStack item = new ItemStack(Material.WHITE_BANNER);
         ItemMeta meta = item.getItemMeta();
 
-        meta.displayName(Component.text("영토 깃발", NamedTextColor.GOLD, TextDecoration.BOLD)
+        meta.displayName(Component.text("서버 깃발", NamedTextColor.AQUA, TextDecoration.BOLD)
                 .decoration(TextDecoration.ITALIC, false));
         meta.lore(List.of(
-                Component.text("빈 땅에 설치하면 영토를 주장합니다.", NamedTextColor.GRAY)
+                Component.text("설치하면 그 자리가 서버 영토이자 서버 스폰이 됩니다.", NamedTextColor.GRAY)
                         .decoration(TextDecoration.ITALIC, false),
-                Component.text("팀이 없다면 이 자리에 새 팀을 창단합니다.", NamedTextColor.GRAY)
+                Component.text("관리자만 설치/파괴할 수 있습니다.", NamedTextColor.GRAY)
                         .decoration(TextDecoration.ITALIC, false)
         ));
         meta.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
@@ -42,7 +41,7 @@ public final class FlagItem {
         return item;
     }
 
-    public boolean isFlag(ItemStack item) {
+    public boolean isServerFlag(ItemStack item) {
         if (item == null) {
             return false;
         }
@@ -51,15 +50,5 @@ public final class FlagItem {
             return false;
         }
         return meta.getPersistentDataContainer().has(key, PersistentDataType.BYTE);
-    }
-
-    public ShapedRecipe createRecipe() {
-        ShapedRecipe recipe = new ShapedRecipe(recipeKey, create());
-        recipe.shape("GDG", "GDG", " W ");
-        recipe.setIngredient('G', Material.GOLD_BLOCK);
-        recipe.setIngredient('D', Material.DIAMOND);
-        recipe.setIngredient('W', Material.WHITE_BANNER);
-        recipe.setCategory(CraftingBookCategory.MISC);
-        return recipe;
     }
 }

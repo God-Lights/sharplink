@@ -2,6 +2,7 @@ package com.sharplink.territorywar.listener;
 
 import com.sharplink.territorywar.TerritoryWarPlugin;
 import com.sharplink.territorywar.item.FlagItem;
+import com.sharplink.territorywar.item.ServerFlagItem;
 import com.sharplink.territorywar.model.PlayerRecord;
 import com.sharplink.territorywar.model.Team;
 import com.sharplink.territorywar.team.TeamManager;
@@ -15,8 +16,12 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.UUID;
 
@@ -27,29 +32,42 @@ public final class FlagListener implements Listener {
     private final TerritoryManager territoryManager;
     private final WinConditionManager winConditionManager;
     private final FlagItem flagItem;
+    private final ServerFlagItem serverFlagItem;
     private final String worldName;
 
     public FlagListener(TerritoryWarPlugin plugin, TeamManager teamManager, TerritoryManager territoryManager,
-                         WinConditionManager winConditionManager, FlagItem flagItem) {
+                         WinConditionManager winConditionManager, FlagItem flagItem, ServerFlagItem serverFlagItem) {
         this.plugin = plugin;
         this.teamManager = teamManager;
         this.territoryManager = territoryManager;
         this.winConditionManager = winConditionManager;
         this.flagItem = flagItem;
+        this.serverFlagItem = serverFlagItem;
         this.worldName = plugin.getConfig().getString("world", "world");
     }
 
     @EventHandler
     public void onPlace(BlockPlaceEvent event) {
-        if (!flagItem.isFlag(event.getItemInHand())) {
+        ItemStack item = event.getItemInHand();
+        boolean isTeamFlag = flagItem.isFlag(item);
+        boolean isServerFlag = serverFlagItem.isServerFlag(item);
+        if (!isTeamFlag && !isServerFlag) {
             return;
         }
 
         Player player = event.getPlayer();
+        Location location = event.getBlockPlaced().getLocation();
 
-        if (!event.getBlockPlaced().getWorld().getName().equals(worldName)) {
+        if (!location.getWorld().getName().equals(worldName)) {
             event.setCancelled(true);
             player.sendMessage(Component.text("영토전쟁이 진행되는 월드(" + worldName + ")에서만 깃발을 설치할 수 있습니다.", NamedTextColor.RED));
+            return;
+        }
+
+        CellCoord cell = CellCoord.fromLocation(location, territoryManager.getCellSize());
+
+        if (isServerFlag) {
+            handleServerFlagPlace(event, player, location, cell);
             return;
         }
 
@@ -59,12 +77,10 @@ public final class FlagListener implements Listener {
             return;
         }
 
-        Location location = event.getBlockPlaced().getLocation();
         PlayerRecord record = teamManager.getOrCreatePlayerRecord(player.getUniqueId());
-        CellCoord cell = CellCoord.fromLocation(location, territoryManager.getCellSize());
 
         if (record.getTeamId() != null) {
-            handleClaim(event, player, record, cell);
+            handleClaim(event, player, record, cell, location);
         } else if (record.isDisplaced()) {
             event.setCancelled(true);
             player.sendMessage(Component.text("무소속(반편입자) 상태에서는 깃발을 설치할 수 없습니다. /team join <팀 이름> 으로 팀에 합류하세요.", NamedTextColor.RED));
@@ -86,12 +102,12 @@ public final class FlagListener implements Listener {
         }
 
         Team team = teamManager.createTeam(player.getName() + "팀", player, location);
-        territoryManager.claim(cell, team.getId());
+        territoryManager.claim(cell, team.getId(), location);
 
         player.sendMessage(Component.text("\"" + team.getName() + "\" 팀을 창단했습니다! 이곳이 팀의 스폰이자 첫 영토입니다.", NamedTextColor.GREEN));
     }
 
-    private void handleClaim(BlockPlaceEvent event, Player player, PlayerRecord record, CellCoord cell) {
+    private void handleClaim(BlockPlaceEvent event, Player player, PlayerRecord record, CellCoord cell, Location location) {
         Team team = teamManager.getTeam(record.getTeamId());
         UUID owner = territoryManager.getOwner(cell);
 
@@ -106,28 +122,60 @@ public final class FlagListener implements Listener {
             return;
         }
 
-        territoryManager.claim(cell, team.getId());
+        territoryManager.claim(cell, team.getId(), location);
         player.sendMessage(Component.text("영토를 확장했습니다! 현재 " + territoryManager.countCells(team.getId()) + "칸 보유 중.", NamedTextColor.GREEN));
+    }
+
+    private void handleServerFlagPlace(BlockPlaceEvent event, Player player, Location location, CellCoord cell) {
+        if (!player.hasPermission("territorywar.admin")) {
+            event.setCancelled(true);
+            player.sendMessage(Component.text("서버 깃발은 관리자만 설치할 수 있습니다.", NamedTextColor.RED));
+            return;
+        }
+
+        CellCoord existing = territoryManager.findCellOwnedBy(TerritoryManager.SERVER_TEAM_ID);
+        if (existing != null && !existing.equals(cell)) {
+            event.setCancelled(true);
+            player.sendMessage(Component.text("이미 서버 깃발이 설치되어 있습니다. 먼저 기존 서버 깃발을 제거하세요.", NamedTextColor.RED));
+            return;
+        }
+
+        territoryManager.claim(cell, TerritoryManager.SERVER_TEAM_ID, location);
+        location.getWorld().setSpawnLocation(location);
+
+        plugin.getServer().broadcast(Component.text("서버 깃발이 설치되었습니다. 이곳이 서버 스폰이자 서버 영토입니다.", NamedTextColor.AQUA));
+    }
+
+    private void handleServerFlagBreak(BlockBreakEvent event, Player breaker, CellCoord cell) {
+        if (!breaker.hasPermission("territorywar.admin")) {
+            event.setCancelled(true);
+            breaker.sendMessage(Component.text("서버 깃발은 관리자만 파괴할 수 있습니다.", NamedTextColor.RED));
+            return;
+        }
+
+        territoryManager.vacate(cell);
+        plugin.getServer().broadcast(Component.text("서버 깃발이 제거되었습니다.", NamedTextColor.AQUA));
     }
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
         Block block = event.getBlock();
-        if (!flagItem.isFlagBlock(block)) {
+        CellCoord cell = CellCoord.fromLocation(block.getLocation(), territoryManager.getCellSize());
+        UUID ownerTeamId = territoryManager.getOwnerIfExactMarker(block.getLocation());
+        if (ownerTeamId == null) {
             return;
         }
 
         Player breaker = event.getPlayer();
 
-        if (winConditionManager.isGameEnded()) {
-            event.setCancelled(true);
-            breaker.sendMessage(Component.text("게임이 이미 종료되었습니다.", NamedTextColor.RED));
+        if (ownerTeamId.equals(TerritoryManager.SERVER_TEAM_ID)) {
+            handleServerFlagBreak(event, breaker, cell);
             return;
         }
 
-        CellCoord cell = CellCoord.fromLocation(block.getLocation(), territoryManager.getCellSize());
-        UUID ownerTeamId = territoryManager.getOwner(cell);
-        if (ownerTeamId == null) {
+        if (winConditionManager.isGameEnded()) {
+            event.setCancelled(true);
+            breaker.sendMessage(Component.text("게임이 이미 종료되었습니다.", NamedTextColor.RED));
             return;
         }
 
@@ -167,5 +215,35 @@ public final class FlagListener implements Listener {
                 winConditionManager.checkSingleTeamStanding();
             }
         }
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getHand() != EquipmentSlot.HAND) {
+            return;
+        }
+        Block block = event.getClickedBlock();
+        if (block == null) {
+            return;
+        }
+        UUID ownerTeamId = territoryManager.getOwnerIfExactMarker(block.getLocation());
+        if (ownerTeamId == null) {
+            return;
+        }
+
+        event.setCancelled(true);
+        Player player = event.getPlayer();
+        long cells = territoryManager.countCells(ownerTeamId);
+        String ownerName;
+        if (ownerTeamId.equals(TerritoryManager.SERVER_TEAM_ID)) {
+            ownerName = "서버";
+        } else {
+            Team team = teamManager.getTeam(ownerTeamId);
+            ownerName = team != null ? team.getName() : "알 수 없음";
+        }
+
+        player.sendMessage(Component.text("\"" + ownerName + "\" 영토 — 보유 " + cells + "칸", NamedTextColor.AQUA));
+        player.setCompassTarget(block.getLocation());
+        player.sendMessage(Component.text("나침반이 이 깃발을 가리키도록 설정되었습니다.", NamedTextColor.GRAY));
     }
 }

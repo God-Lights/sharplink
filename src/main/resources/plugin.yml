@@ -9,6 +9,10 @@ commands:
   team:
     description: 팀 정보 확인 및 반편입자 합류 명령어
     usage: /team [info|join] <팀 이름>
+  flag:
+    description: 깃발 아이템 지급 관리자 명령어
+    usage: /flag [give|serverflag] <플레이어>
+    permission: territorywar.admin
 
 permissions:
   territorywar.admin:
