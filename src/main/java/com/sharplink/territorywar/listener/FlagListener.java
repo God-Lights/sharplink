@@ -257,7 +257,13 @@ public final class FlagListener implements Listener {
         }
 
         player.sendMessage(Component.text("\"" + ownerName + "\" 영토 — 보유 " + cells + "칸", NamedTextColor.AQUA));
+
         player.setCompassTarget(block.getLocation());
-        player.sendMessage(Component.text("나침반이 이 깃발을 가리키도록 설정되었습니다.", NamedTextColor.GRAY));
+        if (!player.getInventory().contains(Material.COMPASS)) {
+            player.getInventory().addItem(new ItemStack(Material.COMPASS));
+            player.sendMessage(Component.text("웨이포인트가 설정되었습니다. 나침반을 지급했으니 그 방향을 보고 따라가세요.", NamedTextColor.GRAY));
+        } else {
+            player.sendMessage(Component.text("웨이포인트가 설정되었습니다. 나침반이 이 깃발을 가리킵니다.", NamedTextColor.GRAY));
+        }
     }
 }
